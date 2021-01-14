@@ -40,3 +40,7 @@ class SqlQueries:
                extract(month from start_time), extract(year from start_time), extract(dayofweek from start_time)
         FROM songplays
     """)
+
+    song_quality_check = ("""
+        SELECT COUNT(song_id) FROM songs WHERE song_id = 'SOUPIRU12A6D4FA1E1'
+        """)

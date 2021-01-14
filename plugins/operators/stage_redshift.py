@@ -40,7 +40,7 @@ class StageToRedshiftOperator(BaseOperator):
 
         self.log.info(f"Copying data from S3 to Redshift table {self.table}")
         s3_path = "s3://{}/{}".format(self.s3_bucket, self.s3_key)
-        formatted_sql = S3ToRedshiftOperator.copy_sql.format(
+        formatted_sql = StageToRedshiftOperator.copy_sql.format(
             self.table,
             s3_path,
             credentials.access_key,
