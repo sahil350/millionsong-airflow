@@ -6,13 +6,10 @@ from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
                                 LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
 
-# AWS_KEY = os.environ.get('AWS_KEY')
-# AWS_SECRET = os.environ.get('AWS_SECRET')
-
 default_args = {
     'owner': 'Sparkify',
     'depends_on_past': False,
-    'start_date': datetime(2021, 1, 14),
+    'start_date': datetime.now(),
     'retry_delay': timedelta(minutes=5),
     'email_on_retry': False,
     'retries': 3,
@@ -22,7 +19,8 @@ default_args = {
 dag = DAG('udac_example_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
-          schedule_interval='0 * * * *'
+          schedule_interval='0 * * * *',
+          max_active_runs=1
         )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -42,7 +40,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     task_id='Stage_songs',
     redshift_conn_id="redshift",
     aws_credentials_id="aws_credentials",
-    table="staging_events",
+    table="staging_songs",
     s3_bucket="udacity-dend",
     s3_key="song_data",
     json_path="auto",

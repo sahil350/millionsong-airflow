@@ -42,5 +42,5 @@ class SqlQueries:
     """)
 
     song_quality_check = ("""
-        SELECT COUNT(song_id) FROM songs WHERE song_id = 'SOUPIRU12A6D4FA1E1'
+        SELECT COUNT(songid) FROM songs WHERE songid = 'SOUPIRU12A6D4FA1E1'
         """)

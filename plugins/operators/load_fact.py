@@ -1,4 +1,5 @@
 from airflow.hooks.postgres_hook import PostgresHook
+from airflow.contrib.hooks.aws_hook import AwsHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
@@ -24,5 +25,5 @@ class LoadFactOperator(BaseOperator):
         self.log.info("Loading songplays table")
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         formatted_sql = f"INSERT INTO {self.schema}.{self.table} ({self.sql_stmt})"
-        redshift.run(formatted_sql
+        redshift.run(formatted_sql)
         self.log.info("Success: loaded songplays table")
