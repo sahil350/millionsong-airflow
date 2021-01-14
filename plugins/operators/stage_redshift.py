@@ -31,6 +31,24 @@ class StageToRedshiftOperator(BaseOperator):
         self.json_path = json_path
 
     def execute(self, context):
+        """
+        This method copies data from s3 to staging tables in Redshift
+
+        * INPUT
+            redshift_conn_id
+                The Airflow Connection Id to Redshift
+            aws_credentials_id
+                The Airflow Connection Id to AWS
+            table
+                The name of the staging table
+            s3_bucket
+                The name of the s3 bucket from where the data will be
+                copied
+            s3_key
+                The key containing raw data in s3 bucket
+            json_path
+                Defaults to auto; the path containing format of raw json
+        """
         aws_hook = AwsHook(self.aws_credentials_id)
         credentials = aws_hook.get_credentials()
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)

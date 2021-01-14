@@ -22,6 +22,19 @@ class LoadFactOperator(BaseOperator):
         self.sql_stmt = sql_stmt
 
     def execute(self, context):
+        """
+        This method loads the fact table into the Redshift Cluster
+
+        * INPUTS
+            redshift_conn_id
+                The Airflow Connection Id to Redshift
+            schema
+                The name of the database in Redshift
+            table
+                Then name of the fact table
+            sql_stmt
+                The SQL statement to insert data into the table
+        """
         self.log.info("Loading songplays table")
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         formatted_sql = f"INSERT INTO {self.schema}.{self.table} ({self.sql_stmt})"

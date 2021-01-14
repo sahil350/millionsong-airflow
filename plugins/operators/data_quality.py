@@ -21,6 +21,21 @@ class DataQualityOperator(BaseOperator):
         self.table = table
 
     def execute(self, context):
+        """
+        This method performs the data quality checks to ensure intgerity
+        and logs the appropriate message. It raises a ValueError in case
+        the quality check fails.
+
+        * INPUTS
+            redshift_conn_id
+                Airflow Connection Id to Redshift
+            sql_stmt
+                The SQL statement to execute for checking data quality
+            result
+                The expected result from the execution of SQL
+            table
+                The name of the table
+        """
         self.log.info('Checking data quality')
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         records = redshift.get_records(self.sql_stmt)

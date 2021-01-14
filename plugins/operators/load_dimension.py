@@ -23,6 +23,22 @@ class LoadDimensionOperator(BaseOperator):
         self.truncate = truncate
 
     def execute(self, context):
+        """
+        This method loads the dimmension tables in Redshift, truncating
+        it if `truncate` is set.
+
+        * INPUTS
+            redshift_conn_id
+                The Airflow Connection Id to Redshift
+            schema
+                The name of the database in Redshift
+            table
+                Then name of the dimmension table
+            sql_stmt
+                The SQL statement to insert data into the table
+            truncate
+                Boolean value, truncates table if it is set
+        """
         self.log.info(f'Loading {self.table} table')
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         if self.truncate:
