@@ -99,8 +99,8 @@ load_time_dimension_table = LoadDimensionOperator(
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
     redshift_conn_id='redshift',
-    sql_stmt=SqlQueries.song_quality_check,
-    result=(1,),
+    tests=[{'sql': SqlQueries.song_quality_check, 'expected_result': (1,)},
+           {'sql': SqlQueries.artist_quality_check, 'expected_result': (1,)}]
     table='songs',
     dag=dag
 )
