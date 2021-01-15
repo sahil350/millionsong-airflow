@@ -9,15 +9,13 @@ class DataQualityOperator(BaseOperator):
     @apply_defaults
     def __init__(self,
                  redshift_conn_id='',
-                 sql_stmt='',
-                 result=None,
+                 tests = [],
                  table='',
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
-        self.sql_stmt = sql_stmt
-        self.result = result
+        self.tests = tests
         self.table = table
 
     def execute(self, context):
@@ -29,18 +27,26 @@ class DataQualityOperator(BaseOperator):
         * INPUTS
             redshift_conn_id
                 Airflow Connection Id to Redshift
-            sql_stmt
-                The SQL statement to execute for checking data quality
-            result
-                The expected result from the execution of SQL
+            tests
+                A list of dictionary with keys `sql`, and `expected_result`
+                `sql` is the test SQL query and `expected_result` is the 
+                expected result from the execution of `sql`
             table
                 The name of the table
         """
+        errors = []
         self.log.info('Checking data quality')
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
-        records = redshift.get_records(self.sql_stmt)
-        if len(records) < 1 or len(records[0]) < 1:
-            raise ValueError(f'Data quality check failed. {self.table} returned no results')
-        if self.result != records[0]:
-            raise ValueError(f'Data quality check failed. {self.result} != {records[0]}')
-        self.log.info('Data quality check succeeded')
+        for test in self.tests:
+            sql_stmt = test.get('sql')
+            result = test.get('expected_result')
+            records = redshift.get_records(sql_stmt)
+            if len(records) < 1 or len(records[0]) < 1 or result != records[0]:
+                errors.append(sql_stmt)
+                
+        if len(errors) > 0:
+            self.log.info("Checks failed")
+            self.log.info(errors)
+            raise ValueError("Data quality checks failed")
+        
+        self.log.info("Data quality checks succeeded")
